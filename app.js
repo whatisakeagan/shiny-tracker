@@ -1,38 +1,50 @@
-const pokemon = [
-    {id: 1, name: "Bulbasaur"},
-    {id: 4, name: "Charmander"},
-    {id: 7, name: "Squirtle"},
-    {id: 25, name: "Pikachu"},
-    {id: 133, name: "Eevee"},
-    {id: 143, name: "Snorlax"},
-    {id: 150, name: "Mewtwo"},
-    {id: 151, name: "Mew"},
-    {id: 196, name: "Espeon"},
-    {id: 197, name: "Umbreon"},
-    {id: 249, name: "Lugia"}, 
-    {id: 250, name: "Ho-Oh"},
-    {id: 384, name: "Rayquaza"},
-    {id: 448, name: "Lucario"}, 
-    {id: 493, name: "Arceus"}
-];
+const STORAGE_KEY = "shinyState";
 
 const listElement = document.getElementById("pokemon-list");
-
 const shinyState = JSON.parse(localStorage.getItem("shinyState")) || {};
 
-for (const p of pokemon) {
-    const li = document.createElement("li");
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = shinyState[p.id] || false;
-
-    checkbox.addEventListener("change", () => {
-        shinyState[p.id] = checkbox.checked;
-        localStorage.setItem("shinyState", JSON.stringify(shinyState));
-    });
-
-    li.appendChild(checkbox);
-    li.append(" " + p.name);
-    listElement.appendChild(li);
+async function loadPokemon(){
+    const response = await fetch("pokemon.json");
+    if (!response.ok) {
+        throw new Error(`Failed to load pokemon.json: ${response.status}`);
+    }
+    return response.json();
 }
+
+function render(pokemon) {
+    for (const p of pokemon) {
+        const li = document.createElement("li");
+
+        const img = document.createElement("img");
+        img.src = p.sprite;
+        img.alt = p.name;
+        img.width = 64;
+        img.height = 64;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = shinyState[p.key] || false;
+
+        checkbox.addEventListener("change", () => {
+            shinyState[p.key] = checkbox.checked;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(shinyState));
+        });
+
+        li.appendChild(checkbox);
+        li.appendChild(img);
+        li.append(" " + p.name);
+        listElement.appendChild(li);
+    }
+}
+
+async function main () {
+    try {
+        const pokemon = await loadPokemon();
+        render(pokemon);
+    } catch (err) {
+        console.error(err);
+        listElement.textContent = "Failed to load Pokemon. Check the console.";
+    }
+}
+
+main();
