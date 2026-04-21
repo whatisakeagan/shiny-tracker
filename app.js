@@ -18,8 +18,21 @@ const pokemon = [
 
 const listElement = document.getElementById("pokemon-list");
 
+const shinyState = JSON.parse(localStorage.getItem("shinyState")) || {};
+
 for (const p of pokemon) {
     const li = document.createElement("li");
-    li.textContent = p.name;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = shinyState[p.id] || false;
+
+    checkbox.addEventListener("change", () => {
+        shinyState[p.id] = checkbox.checked;
+        localStorage.setItem("shinyState", JSON.stringify(shinyState));
+    });
+
+    li.appendChild(checkbox);
+    li.append(" " + p.name);
     listElement.appendChild(li);
 }
