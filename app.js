@@ -21,7 +21,7 @@ function render(pokemon) {
         const li = document.createElement("li");
 
         const img = document.createElement("img");
-        img.src = p.sprite;
+        img.src = p.shinySprite;
         img.alt = p.name;
         img.width = 64;
         img.height = 64;
