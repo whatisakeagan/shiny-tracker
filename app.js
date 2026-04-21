@@ -16,4 +16,10 @@ const pokemon = [
     {id: 493, name: "Arceus"}
 ];
 
-console.log(pokemon);
+const listElement = document.getElementById("pokemon-list");
+
+for (const p of pokemon) {
+    const li = document.createElement("li");
+    li.textContent = p.name;
+    listElement.appendChild(li);
+}
